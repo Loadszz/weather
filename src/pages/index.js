@@ -1,124 +1,327 @@
-import Image from 'next/image'
+import axios from 'axios';
 import { Inter } from 'next/font/google'
+import { useEffect, useState } from 'react'
+import { ImSpinner8 } from 'react-icons/im'
+import { TbTemperatureCelsius } from 'react-icons/tb'
+import {
+	IoMdSunny,
+	IoMdRainy,
+	IoMdCloudy,
+	IoMdSnow,
+	IoMdThunderstorm,
+	IoMdSearch
+} from 'react-icons/io'
+import {
+	BsCloudHaze2Fill,
+	BsCloudDrizzleFill,
+	BsEye,
+	BsWater,
+	BsThermometer,
+	BsWind
+} from 'react-icons/bs'
+
 
 const inter = Inter({ subsets: ['latin'] })
+const lang = 'ru'
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/pages/index.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+	const apiKey = '243a539f310175bc8a187c9a25d535a5'
+	const [data, setData] = useState(null)
+	const [location, setLocation] = useState('Kharkiv')
+	const [inputValue, setInputValue] = useState('')
+	const [animate, setAnimate] = useState(false)
+	const [loading, setLoading] = useState(false)
+	const [errorMsg, setErrorMsg] = useState('')
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+	const handleInput = (e) => {
+		setInputValue(e.target.value)
+	}
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		if (inputValue !== '') {
+			setLocation(inputValue)
+		}
+		if (inputValue === '') {
+			setAnimate(true);
+			setTimeout(() => {
+				setAnimate(false)
+			}, 500);
+		}
+		setInputValue('')
+	}
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p
-            className={`${inter.className} m-0 max-w-[30ch] text-sm opacity-50`}
-          >
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+	useEffect(() => {
+		setLoading(true)
+		const response = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${apiKey}`
+		axios.get(response).then((res) => {
+			setTimeout(() => {
+				setData(res.data)
+				setLoading(false)
+			}, 1500);
+			console.log(res.data);
+		}).catch(err => {
+			setLoading(false)
+			setErrorMsg(err)
+		})
+	}, [location]);
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p
-            className={`${inter.className} m-0 max-w-[30ch] text-sm opacity-50`}
-          >
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setErrorMsg('')
+		}, 2000);
+		return () => clearTimeout(timer)
+	}, [errorMsg])
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p
-            className={`${inter.className} m-0 max-w-[30ch] text-sm opacity-50`}
-          >
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
+	if (!data) {
+		return (
+			<div className='w-full h-screen bg-gradientBg flex flex-col justify-center items-center'>
+				<div>
+					<ImSpinner8 className='text-5xl animate-spin text-white' />
+				</div>
+			</div>
+		)
+	}
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p
-            className={`${inter.className} m-0 max-w-[30ch] text-sm opacity-50`}
-          >
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+	let icon;
+	switch (data.weather[0].main) {
+		case 'Clouds':
+			icon = <IoMdCloudy />;
+			break;
+		case 'Haze':
+			icon = <BsCloudHaze2Fill />;
+			break;
+		case 'Rain':
+			icon = <IoMdRainy className='text-[#31cafb]' />;
+			break;
+		case 'Clear':
+			icon = <IoMdSunny className='text-[#ffde33]' />;
+			break;
+		case 'Drizzle':
+			icon = <BsCloudDrizzleFill className='text-[#31cafb]' />;
+			break;
+		case 'Snow':
+			icon = <IoMdSnow className='text-[#31cafb]' />;
+			break;
+		case 'Thunderstorm':
+			icon = <IoMdThunderstorm />;
+			break;
+	}
+
+	const date = new Date()
+	return (
+		// <div className='w-full h-screen bg-gradientBg flex flex-col items-center justify-center px-4 lg:px-0'>
+		// 	{errorMsg && (
+		// 		<div className='w-full max-w-[90vh] lg:max-w-[450px] bg-[#ff208c] text-white absolute top-2
+		// 		lg:top-10 p-4 capitalize rounded-md'>
+		// 			{`${errorMsg.response.data.message}`}
+		// 		</div>
+		// 	)}
+		// 	{/* form */}
+		// 	<form
+		// 		className={`${animate ? 'animate-shake' : 'animate-none'} h-16 bg-black/30 w-full max-w-[450px]  rounded-full backdrop-blur-[32px] mb-8`}
+		// 		action="#">
+		// 		<div className='h-full relative flex items-center justify-between p-2'>
+		// 			<input
+		// 				onChange={handleInput}
+		// 				className='flex-1 bg-transparent outline-none placeholder:text-white text-white
+		// 				text-[15px] font-light pl-6 h-full'
+		// 				type="text"
+		// 				value={inputValue}
+		// 				placeholder='Search by city country' />
+		// 			<button
+		// 				className='bg-[#dd793b] hover:bg-[#ed8f48] w-20 h-12 rounded-full flex justify-center items-center'
+		// 				onClick={(e) => handleSubmit(e)}>
+		// 				<IoMdSearch className='text-2xl text-white' />
+		// 			</button>
+		// 		</div>
+		// 	</form>
+		// 	{/* card */}
+		// 	<div className='w-full max-w-[450px] min-h-[584px] text-white backdrop-blur-[32px] 
+		// 	rounded-[32px] bg-black/20 py-12 px-6'>
+		// 		{loading ?
+		// 			<div className='w-full h-full flex justify-center items-center'>
+		// 				<ImSpinner8 className='text-white text-5xl animate-spin' />
+		// 			</div>
+		// 			:
+		// 			<div>
+		// 				{/* card top */}
+		// 				<div className='bg-pink-100/30 flex items-center gap-x-5'>
+		// 					{/* icon */}
+		// 					<div className='text-[87px]'>{icon}</div>
+		// 					<div>
+		// 						{/* country name */}
+		// 						<div className='text-2xl font-semibold'>{data.name}, {data.sys.country}</div>
+		// 						{/* date */}
+		// 						<div>{date.getUTCDate() >= 10 ? date.getUTCDate() : '0' + date.getUTCDate()}/
+		// 							{date.getUTCMonth() >= 10 ? date.getUTCMonth() : '0' + date.getUTCMonth()}/
+		// 							{date.getUTCFullYear()}</div>
+		// 					</div>
+		// 				</div>
+		// 				{/* card body */}
+		// 				<div className='my-20'>
+		// 					<div className='flex justify-center items-center'>
+		// 						{/* temp */}
+		// 						<div className='text-[144px] leading-none font-light'>{parseInt(data.main.temp)}</div>
+		// 						{/* celsius icon */}
+		// 						<div className='text-4xl'>
+		// 							<TbTemperatureCelsius />
+		// 						</div>
+		// 					</div>
+		// 					{/* weather description */}
+		// 					<div className='capitalize text-center'>{data.weather[0].description}</div>
+		// 				</div>
+		// 				{/* card bottom */}
+		// 				<div className='max-w-[378px] mx-auto flex flex-col gap-y-6'>
+		// 					<div className='flex justify-between'>
+		// 						<div className='flex items-center gap-x-2'>
+		// 							{/* icon */}
+		// 							<div className='text-[20px]'>
+		// 								<BsEye />
+		// 							</div>
+		// 							<div>Visibility <span className='ml-2'>{data.visibility / 1000} km</span></div>
+		// 						</div>
+		// 						<div className='flex items-center gap-x-2'>
+		// 							{/* icon */}
+		// 							<div className='text-[20px]'>
+		// 								<BsThermometer />
+		// 							</div>
+		// 							<div className='flex'>Feels like
+		// 								<div className='flex ml-2'>{parseInt(data.main.feels_like)}</div>
+		// 								<TbTemperatureCelsius />
+		// 							</div>
+		// 						</div>
+		// 					</div>
+		// 					<div className='flex justify-between'>
+		// 						<div className='flex items-center gap-x-2'>
+		// 							{/* icon */}
+		// 							<div className='text-[20px]'>
+		// 								<BsWater />
+		// 							</div>
+		// 							<div>Humidity
+		// 								<span className='ml-2'>{data.main.humidity} %</span>
+		// 							</div>
+		// 						</div>
+		// 						<div className='flex items-center gap-x-2'>
+		// 							{/* icon */}
+		// 							<div className='text-[20px]'>
+		// 								<BsWind />
+		// 							</div>
+		// 							<div>Wind
+		// 								<span className='ml-2'>{parseInt(data.wind.speed)} m/s</span>
+		// 							</div>
+		// 						</div>
+		// 					</div>
+		// 				</div>
+		// 			</div>
+		// 		}
+		// 	</div>
+		// </div>
+		<div className='w-full h-screen bg-gradientBg flex flex-col items-center justify-center px-4 lg:px-0'>
+			{errorMsg && (
+				<div className='w-full max-w-[90vh] lg:max-w-[450px] bg-[#ff208c] text-white absolute top-2
+				lg:top-10 p-4 capitalize rounded-md'>
+					{`${errorMsg.response.data.message}`}
+				</div>
+			)}
+			{/* form */}
+			<form
+				className={`${animate ? 'animate-shake' : 'animate-none'} h-16 bg-black/30 w-full max-w-[450px]  rounded-full backdrop-blur-[32px] mb-8`}
+				action="#">
+				<div className='h-full relative flex items-center justify-between p-2'>
+					<input
+						onChange={handleInput}
+						className='flex-1 bg-transparent outline-none placeholder:text-white text-white
+						text-[15px] font-light pl-6 h-full'
+						type="text"
+						value={inputValue}
+						placeholder='Search by city country' />
+					<button
+						className='bg-[#dd793b] hover:bg-[#ed8f48] w-20 h-12 rounded-full flex justify-center items-center'
+						onClick={(e) => handleSubmit(e)}>
+						<IoMdSearch className='text-2xl text-white' />
+					</button>
+				</div>
+			</form>
+			{/* card */}
+			<div className='w-full max-w-[450px] min-h-[584px] text-white backdrop-blur-[32px] 
+			rounded-[32px] bg-black/20 py-12 px-6'>
+				{loading ?
+					<div className='w-full h-full flex justify-center items-center'>
+						<ImSpinner8 className='text-white text-5xl animate-spin' />
+					</div>
+					:
+					<div>
+						{/* card top */}
+						<div className='flex items-center gap-x-5'>
+							{/* icon */}
+							<div className='text-[87px]'>{icon}</div>
+							<div>
+								{/* country name */}
+								<div className='text-2xl font-semibold'>{data.name}, {data.sys.country}</div>
+								{/* date */}
+								<div>{date.getUTCDate() >= 10 ? date.getUTCDate() : '0' + date.getUTCDate()}/
+									{date.getUTCMonth() >= 10 ? date.getUTCMonth() : '0' + date.getUTCMonth()}/
+									{date.getUTCFullYear()}</div>
+							</div>
+						</div>
+						{/* card body */}
+						<div className='my-20'>
+							<div className='flex justify-center items-center'>
+								{/* temp */}
+								<div className='text-[144px] leading-none font-light'>{parseInt(data.main.temp)}</div>
+								{/* celsius icon */}
+								<div className='text-4xl'>
+									<TbTemperatureCelsius />
+								</div>
+							</div>
+							{/* weather description */}
+							<div className='capitalize text-center'>{data.weather[0].description}</div>
+						</div>
+						{/* card bottom */}
+						<div className='max-w-[378px] mx-auto flex flex-col gap-y-6'>
+							<div className='flex justify-between'>
+								<div className='flex items-center gap-x-2'>
+									{/* icon */}
+									<div className='text-[20px]'>
+										<BsEye />
+									</div>
+									<div>Visibility <span className='ml-2'>{data.visibility / 1000} km</span></div>
+								</div>
+								<div className='flex items-center gap-x-2'>
+									{/* icon */}
+									<div className='text-[20px]'>
+										<BsThermometer />
+									</div>
+									<div className='flex'>Feels like
+										<div className='flex ml-2'>{parseInt(data.main.feels_like)}</div>
+										<TbTemperatureCelsius />
+									</div>
+								</div>
+							</div>
+							<div className='flex justify-between'>
+								<div className='flex items-center gap-x-2'>
+									{/* icon */}
+									<div className='text-[20px]'>
+										<BsWater />
+									</div>
+									<div>Humidity
+										<span className='ml-2'>{data.main.humidity} %</span>
+									</div>
+								</div>
+								<div className='flex items-center gap-x-2'>
+									{/* icon */}
+									<div className='text-[20px]'>
+										<BsWind />
+									</div>
+									<div>Wind
+										<span className='ml-2'>{parseInt(data.wind.speed)} m/s</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	)
 }
