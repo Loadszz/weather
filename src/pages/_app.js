@@ -5,5 +5,5 @@ export default function App({ Component, pageProps }) {
 	<Head>
         	<title>Weather</title>
       	</Head>
-	return <Component {...pageProps} />
+	<Component {...pageProps} />
 }
